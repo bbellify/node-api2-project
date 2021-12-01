@@ -45,6 +45,7 @@ router.get(`/:id`, async (req, res) => {
     }
 })
 
+// create new post
 router.post(`/`, (req, res) => {
 
     const { title, contents } = req.body
@@ -78,6 +79,7 @@ router.post(`/`, (req, res) => {
     }
 })
 
+// edit post by id
 router.put(`/:id`, async (req, res) => {
     const updates = req.body
     const id = req.params.id
@@ -109,8 +111,26 @@ router.put(`/:id`, async (req, res) => {
         }
 })
 
+// delete post by id
 router.delete(`/:id`, async (req, res) => {
+    const { id } = req.params
+
+    const toDelete = await Post.findById(id)
     
+    if (!toDelete) {
+        res.status(404).json({
+            message: "The post with the specified ID does not exist"
+        })
+    } else {
+        const removed = await Post.remove(id)
+        if (!removed) {
+                res.status(500).json({
+                    message: "The post could not be removed",
+                })
+        } else {
+            res.status(200).json(toDelete)    
+        }
+    }   
 })
 
 router.get(`/:id/comments`, async (req, res) => {
